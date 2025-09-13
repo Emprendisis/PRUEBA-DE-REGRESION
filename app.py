@@ -46,7 +46,7 @@ def scale_to_percentage_points(df, exclude=("Año","Ano","Year")):
 st.subheader("📂 Cargar datos históricos")
 st.markdown(
     "Puedes subir **CSV o Excel**. La app acepta **variables en filas o en columnas**. "
-    "Variables requeridas: **PIB, Desempleo, TipoCambioPct, Inflacion, Ventas**."
+    "Variables requeridas: **PIB, Empleo, TipoCambioPct, Inflacion, Ventas**."
 )
 up = st.file_uploader("Archivo histórico (CSV/XLSX)", type=["csv","xlsx"])
 
@@ -87,14 +87,14 @@ st.caption("Datos históricos (tras limpieza/normalización). Todos los porcenta
 st.dataframe(df, use_container_width=True)
 
 # Validación de columnas requeridas
-req = ["PIB","Desempleo","TipoCambioPct","Inflacion","Ventas"]
+req = ["PIB","Empleo","TipoCambioPct","Inflacion","Ventas"]
 missing = [c for c in req if c not in df.columns]
 if missing:
     st.error(f"Faltan columnas requeridas: {missing}. Renombra en tu archivo y vuelve a subir.")
     st.stop()
 
 # ---------- regresiones simples ----------
-X_vars = ["PIB","Desempleo","TipoCambioPct","Inflacion"]
+X_vars = ["PIB","Empleo","TipoCambioPct","Inflacion"]
 y = df["Ventas"].astype(float).values
 
 pend, inter, r2 = {}, {}, {}
@@ -159,4 +159,5 @@ st.download_button(
     data=out.getvalue(),
     file_name="Resultados_Proyecciones.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
 )
