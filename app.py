@@ -46,7 +46,7 @@ def scale_to_percentage_points(df, exclude=("Año","Ano","Year")):
 st.subheader("📂 Cargar datos históricos")
 st.markdown(
     "Puedes subir **CSV o Excel**. La app acepta **variables en filas o en columnas**. "
-    "Variables requeridas: **PIB, Desempleo, TipoCambioPct, Inflacion, Ventas**."
+    "Variables requeridas: **PIB, Empleo, TipoCambioPct, Inflacion, Ventas**."
 )
 up = st.file_uploader("Archivo histórico (CSV/XLSX)", type=["csv","xlsx"])
 
@@ -87,14 +87,14 @@ st.caption("Datos históricos (tras limpieza/normalización). Todos los porcenta
 st.dataframe(df, use_container_width=True)
 
 # Validación de columnas requeridas
-req = ["PIB","Desempleo","TipoCambioPct","Inflacion","Ventas"]
+req = ["PIB","Empleo","TipoCambioPct","Inflacion","Ventas"]
 missing = [c for c in req if c not in df.columns]
 if missing:
     st.error(f"Faltan columnas requeridas: {missing}. Renombra en tu archivo y vuelve a subir.")
     st.stop()
 
 # ---------- regresiones simples ----------
-X_vars = ["PIB","Desempleo","TipoCambioPct","Inflacion"]
+X_vars = ["PIB","Empleo","TipoCambioPct","Inflacion"]
 y = df["Ventas"].astype(float).values
 
 pend, inter, r2 = {}, {}, {}
@@ -123,11 +123,11 @@ st.sidebar.header("🔮 Escenarios (pronósticos macro)")
 st.sidebar.caption("Ingresa valores en **puntos porcentuales** (ej. 2.5 = 2.5%).")
 
 pib_f   = st.sidebar.number_input("Variación PIB (%)",      value=2.50)
-des_f   = st.sidebar.number_input("Desempleo (%)",          value=3.90)
+des_f   = st.sidebar.number_input("Empleo (%)",          value=3.90)
 tc_f    = st.sidebar.number_input("Tipo de cambio (%)",     value=0.28)
 infl_f  = st.sidebar.number_input("Inflación (%)",          value=4.80)
 
-forecast = {"PIB":pib_f, "Desempleo":des_f, "TipoCambioPct":tc_f, "Inflacion":infl_f}
+forecast = {"PIB":pib_f, "Empleo":des_f, "TipoCambioPct":tc_f, "Inflacion":infl_f}
 
 # ---------- pronósticos de ventas ----------
 ventas_simple = {v: inter[v] + pend[v]*forecast[v] for v in X_vars}
@@ -159,4 +159,5 @@ st.download_button(
     data=out.getvalue(),
     file_name="Resultados_Proyecciones.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
 )
